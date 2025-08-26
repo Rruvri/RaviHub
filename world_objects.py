@@ -10,10 +10,8 @@ class Item:
             "item": (f"{self.name}"),
             }
         
-    
-
-    def add_to_collection(self, collections):
-        for c in collections:
+    def add_to_collection(self, col):
+        for c in col:
             if self.cat.lower() == c["name"].lower():
                 
                 
@@ -21,9 +19,10 @@ class Item:
 
 
             else:
-                collections.append(Collection(self.cat))
-                f"{self.cat}".items.append(self.item_dict)
-                return collections
+                new_col = (Collection(self.cat))
+                col.append(new_col)
+                new_col.items.append(self.item_dict)
+                return col
     
 class Collection:
     def __init__(self, name):
@@ -37,17 +36,7 @@ class Collection:
 
 
 # defs
-def create_new_item(col):
-    name_input = input("Item name: ")
-    cat_input = input("Item category: ")
-    new_item = Item(name_input, cat_input)
-    new_item.add_to_collection(col)
 
-def create_new_collection(col):
-    input = input("Collection name: ")
-    new_col = Collection(input)
-    col.append(new_col)
-    return col
 
 """
 # dead code (for now)
