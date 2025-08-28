@@ -27,13 +27,15 @@ def main():
             print(f"{col.name}: {[item.name for item in col.items]}")
         print("=======================")
 
-        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Save and exit\nEnter choice: ")
+        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Save and exit\n\nEnter choice: ")
         if menu_choice == "1":
             clear_console()
             create_item(collections)
+
         elif menu_choice == "2":
             clear_console()
             create_collection(collections)
+
         elif menu_choice == "3":
             clear_console()
             if not collections:

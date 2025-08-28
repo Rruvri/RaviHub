@@ -21,6 +21,16 @@ class Collection:
             clear_console()
         for item in self.items:
             print(f"{item.name}[{item.subcat}]\n")
+            print("======== Actions ========\n[1]Rename collection") 
+            menu_action = input("Enter choice: ")
+            if menu_action == "1":
+                new_name = input("Enter new collection name: ")
+                self.name = new_name
+                break
+            elif menu_action != "1":
+                clear_console()
+                break
+
         
         
         
