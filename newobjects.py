@@ -7,6 +7,9 @@ class Item:
     def __init__(self, name, subcat):
         self.name = name
         self.subcat = subcat
+
+
+
     
 class Collection:
     def __init__(self, name):
@@ -15,24 +18,35 @@ class Collection:
     def view_collection(self):
         clear_console()
         print(f"======== {self.name} ========")
+        
         if not self.items:
             print("(empty!)")
             time.sleep(1.5)
             clear_console()
+
         for item in self.items:
-            print(f"{item.name}[{item.subcat}]\n")
-            print("======== Actions ========\n[1]Rename collection") 
-            menu_action = input("Enter choice: ")
-            if menu_action == "1":
-                new_name = input("Enter new collection name: ")
-                self.name = new_name
-                break
-            elif menu_action != "1":
-                clear_console()
-                break
+            print(f"{item.name}[{item.subcat}]")
+        self.menu_actions()
 
         
-        
+    def menu_actions(self): 
+        print("======== Actions ========\n[1]Add item\n[2]Rename collection\n[3]Update collection data\n[0]Exit\n") 
+        menu_action = input("Enter choice: ")
+        if menu_action == "1":
+            name = input("Item name: ")
+            subcat = input("Item subcategory: ")
+            self.items.append(Item(name,subcat))
+            self.view_collection()
+            
+        elif menu_action == "2":
+            new_name = input("Enter new collection name: ")
+            self.name = new_name
+            self.view_collection()
+            
+        elif menu_action == "0":
+            clear_console()
+            
+            
         
 def create_item(collections):        
     name = input("Item name: ")
