@@ -30,18 +30,26 @@ class Collection:
 
         
     def menu_actions(self): 
-        print("======== Actions ========\n[1]Add item\n[2]Rename collection\n[3]Update collection data\n[0]Exit\n") 
+        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[0]Exit\n") 
         menu_action = input("Enter choice: ")
         if menu_action == "1":
             name = input("Item name: ")
             subcat = input("Item subcategory: ")
             self.items.append(Item(name,subcat))
             self.view_collection()
-            
-        elif menu_action == "2":
+        
+        if menu_action == '2':
+            pass #this will be item info add
+
+
+
+
+        elif menu_action == "3":
             new_name = input("Enter new collection name: ")
             self.name = new_name
             self.view_collection()
+        
+            
             
         elif menu_action == "0":
             clear_console()
