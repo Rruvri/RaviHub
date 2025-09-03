@@ -3,12 +3,11 @@ import os
 def clear_console():
     os.system('clear')
 
+
 class Item:
     def __init__(self, name, subcat):
         self.name = name
         self.subcat = subcat
-
-
 
     
 class Collection:
@@ -32,6 +31,7 @@ class Collection:
     def menu_actions(self): 
         print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[0]Exit\n") 
         menu_action = input("Enter choice: ")
+        
         if menu_action == "1":
             name = input("Item name: ")
             subcat = input("Item subcategory: ")
@@ -40,8 +40,9 @@ class Collection:
         
         if menu_action == '2':
             pass #this will be item info add
-
-
+            '''
+            
+            '''
 
 
         elif menu_action == "3":
@@ -54,8 +55,14 @@ class Collection:
         elif menu_action == "0":
             clear_console()
             
-            
+#Maybe 'Memo' Collection object?
+class Memo(Collection):
+    def __init__(name, items):
+        super().__init__(name, items)
         
+
+
+#Create new objects   
 def create_item(collections):        
     name = input("Item name: ")
     col = input("Item collection: ")

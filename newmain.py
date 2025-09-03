@@ -1,11 +1,17 @@
+#Imports + sys commands
+
 import os
 import sys
 import time
 import pickle
+
 from newobjects import *
+from tracking import *
 
 def clear_console():
     os.system('clear')
+
+# Set-Up
     
 collections = []
 
@@ -15,19 +21,21 @@ collections = collections_load
 
 
 
-    
-
 
 
 def main():
     while True:
+        
         print("======= RaviHub =======")
         print("Open Collections:")
         for col in collections:
             print(f"{col.name}: {[item.name for item in col.items]}")
         print("=======================")
+        
+#Main Menu + Options
 
         menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection[0]Save and exit\n\nEnter choice: ")
+        
         if menu_choice == "1":
             clear_console()
             create_item(collections)
