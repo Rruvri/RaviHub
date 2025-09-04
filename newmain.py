@@ -34,7 +34,7 @@ def main():
         
 #Main Menu + Options
 
-        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection[0]Save and exit\n\nEnter choice: ")
+        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[0]Save and exit\n\nEnter choice: ")
         
         if menu_choice == "1":
             clear_console()
