@@ -8,12 +8,30 @@ class Item:
     def __init__(self, name, subcat):
         self.name = name
         self.subcat = subcat
+        self.start_date = 'N/A'
+        self.stock = 0
+
+    def view_item(self):
+        print(f"======== {self.name} ========")
+        print(f'[1]Name: {self.name}\n[2]Subcategory: {self.subcat}\n[3]Active Start Date: {self.start_date}\n[4]Extra Stock: {self.stock}')
+        option_select = input('Enter trait number to edit, or 0 to exit: ')
+        if option_select == '1':
+            self.name = input('Enter new item name: ')
+        elif option_select == '2':
+            self.subcat = input('Enter new subcategory name: ')
+        elif option_select == '3':
+            self.start_date = input('Enter start date for current item (DD/MM/YY): ')
+        elif option_select == '4':
+            self.subcat = input('Enter number of items in stock (excluding current active item): ')
+        elif option_select == '0':
+            return
 
     
 class Collection:
     def __init__(self, name):
         self.name = name
         self.items = []
+
     def view_collection(self):
         clear_console()
         print(f"======== {self.name} ========")
@@ -24,7 +42,7 @@ class Collection:
             clear_console()
 
         for item in self.items:
-            print(f"{item.name}[{item.subcat}]")
+            print(f"[{self.items.index(item)+1}] {item.name} ({item.subcat})")
         self.menu_actions()
 
         
@@ -38,11 +56,14 @@ class Collection:
             self.items.append(Item(name,subcat))
             self.view_collection()
         
-        if menu_action == '2':
-            pass #this will be item info add
-            '''
+        elif menu_action == '2':
+            select_item = input('Enter item number: ')
+            self.items[int(select_item)-1].view_item()
+            self.view_collection()
+
+
             
-            '''
+            
 
 
         elif menu_action == "3":
