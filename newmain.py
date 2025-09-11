@@ -19,6 +19,10 @@ with open('collection_save.pkl', 'rb') as f:
     collections_load = pickle.load(f)
 collections = collections_load
 
+memos = Memos()
+memos.items = []
+
+
 
 
 
@@ -34,7 +38,7 @@ def main():
         
 #Main Menu + Options
 
-        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[0]Save and exit\n\nEnter choice: ")
+        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[0]Save and exit\n\nEnter choice: ")
         
         if menu_choice == "1":
             clear_console()
@@ -65,6 +69,9 @@ def main():
                 del collections[int(delete_choice) -1]
             elif confirm.lower() == 'n':
                 break
+        
+        elif menu_choice == '5':
+
             
         elif menu_choice == '0':
             clear_console()

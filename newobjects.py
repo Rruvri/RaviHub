@@ -22,11 +22,16 @@ class Item:
         elif option_select == '3':
             self.start_date = input('Enter start date for current item (DD/MM/YY): ')
         elif option_select == '4':
-            self.subcat = input('Enter number of items in stock (excluding current active item): ')
+            self.stock = input('Enter number of items in stock (excluding current active item): ')
         elif option_select == '0':
             return
 
-    
+class Count(Item):
+    pass
+
+class Volume(Item):
+    pass
+
 class Collection:
     def __init__(self, name):
         self.name = name
@@ -42,7 +47,7 @@ class Collection:
             clear_console()
 
         for item in self.items:
-            print(f"[{self.items.index(item)+1}] {item.name} ({item.subcat})")
+            print(f"[{self.items.index(item)+1}] {item.name} ({item.subcat}) | Active start date: {item.start_date} ({item.stock} in stock)")
         self.menu_actions()
 
         
@@ -61,25 +66,49 @@ class Collection:
             self.items[int(select_item)-1].view_item()
             self.view_collection()
 
-
-            
-            
-
-
         elif menu_action == "3":
             new_name = input("Enter new collection name: ")
             self.name = new_name
             self.view_collection()
         
-            
-            
         elif menu_action == "0":
             clear_console()
+
+
+
+
+
             
-#Maybe 'Memo' Collection object?
-class Memo(Collection):
-    def __init__(name, items):
+#Memos
+
+#Need to see how to check if col is memo, so it can be printed separately 
+class Memos(Collection):
+    def __init__(self, name, items):
         super().__init__(name, items)
+    
+    def view_collection(self):
+
+        for memo in self.items:
+            base_memo = f"[{self.items.index(memo)+1}] - {memo.start_date} | {memo.name}"
+            if memo.notes != 'N/A':
+                print(f'{base_memo} (view to see notes)')
+            else:
+                print(base_memo)  
+
+#todo - finish this + main interactions
+
+class Memo(Item):
+    def __init__(self, name, subcat):
+        super().__init__(name, subcat)
+        self.notes = 'N/A'
+        self.start_date = 'N/A'
+    
+    def view_item(self):
+        print(f'{self.start_date}|{self.name}[{self.subcat}]')
+        if self.notes != 'N/A':
+            print(self.notes)
+        
+#todo - finish this + main interactions
         
 
 
@@ -114,3 +143,4 @@ def create_collection(collections):
     else:
         collections.append(new_collection)
         clear_console()
+    
