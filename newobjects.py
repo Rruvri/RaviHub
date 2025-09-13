@@ -79,7 +79,7 @@ class Collection:
 
 
             
-#Memos
+#========Memos
 
 #Need to see how to check if col is memo, so it can be printed separately 
 class Memos:
@@ -135,11 +135,13 @@ class Memo(Item):
         if self.notes != 'N/A':
             print(self.notes)
         
-#todo - finish this + main interactions
+
         
 
 
-#Create new objects   
+#=============Create new objects
+
+#=items    
 def create_item(collections):        
     name = input("Item name: ")
     col = input("Item collection: ")
@@ -158,6 +160,7 @@ def create_item(collections):
         collections.append(new_col)
         clear_console()
 
+#memos
 def create_memo(memos):
     title = input('Memo header: ')
     cat = input('Memo category: ')
@@ -171,10 +174,8 @@ def create_memo(memos):
         new_memo.notes = notes
     memos.items.append(new_memo)
     clear_console()
-        
-    
-    
-    
+
+#collections         
 def create_collection(collections):
     name = input("Collection name: ")
     new_collection = Collection(name)
