@@ -14,13 +14,16 @@ def clear_console():
 # Set-Up
     
 collections = []
+memos = Memos()
 
 with open('collection_save.pkl', 'rb') as f:
+    
     collections_load = pickle.load(f)
-collections = collections_load
+    
+    collections = collections_load[0]
+    memos = collections_load[1]
 
-memos = Memos()
-memos.items = []
+
 
 
 
@@ -30,15 +33,16 @@ memos.items = []
 def main():
     while True:
         
-        print("======= RaviHub =======")
-        print("Open Collections:")
+        print("======= RaviHub =======\n->Reminders:")
+        memos.view_collection()
+        print("\n->Open Collections:")
         for col in collections:
             print(f"{col.name}: {[item.name for item in col.items]}")
-        print("=======================")
+        print("=======================\n")
         
 #Main Menu + Options
 
-        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[0]Save and exit\n\nEnter choice: ")
+        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[6]View/Edit memos\n[0]Save and exit\n\nEnter choice: ")
         
         if menu_choice == "1":
             clear_console()
@@ -71,12 +75,17 @@ def main():
                 break
         
         elif menu_choice == '5':
-
+            clear_console()
+            create_memo(memos)
+        
+        elif menu_choice == '6':
+            clear_console()
+            memos.full_view()
             
         elif menu_choice == '0':
             clear_console()
             with open('collection_save.pkl', 'wb') as f:
-                pickle.dump(collections, f)
+                pickle.dump([collections, memos], f)
             print("Saved! Now exiting...")
             time.sleep(1)
             sys.exit()

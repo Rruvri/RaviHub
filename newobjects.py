@@ -82,18 +82,45 @@ class Collection:
 #Memos
 
 #Need to see how to check if col is memo, so it can be printed separately 
-class Memos(Collection):
-    def __init__(self, name, items):
-        super().__init__(name, items)
+class Memos:
+    def __init__(self):
+        self.items = []
     
     def view_collection(self):
 
         for memo in self.items:
-            base_memo = f"[{self.items.index(memo)+1}] - {memo.start_date} | {memo.name}"
+            if not self.items:
+                print('No memos!')
+                return
+            base_memo = f"[{self.items.index(memo)+1}] {memo.name} | {memo.start_date}"
             if memo.notes != 'N/A':
                 print(f'{base_memo} (view to see notes)')
             else:
                 print(base_memo)  
+    
+    def full_view(self):
+        for memo in self.items:
+            if not self.items:
+                print('No memos!')
+                return
+            base_memo = f"[{self.items.index(memo)+1}] - {memo.start_date} | {memo.name}"
+            if memo.notes != 'N/A':
+                print(f'{base_memo}\n{memo.notes}')
+            else:
+                print(base_memo)
+        
+        menu_choice = input('\n=======================\nActions:\n[1]Delete a memo\n[0]Return\nEnter choice: ')
+        if menu_choice == '1':
+             del_choice = input('Enter memo no. to delete (or 0 to exit): ')
+             if del_choice == '0':
+                 self.full_view()
+             del self.items[int(del_choice)-1]
+             self.full_view()
+        
+        elif menu_choice == '0':
+            clear_console()
+            return
+
 
 #todo - finish this + main interactions
 
@@ -130,6 +157,23 @@ def create_item(collections):
         new_col.items.append(item)
         collections.append(new_col)
         clear_console()
+
+def create_memo(memos):
+    title = input('Memo header: ')
+    cat = input('Memo category: ')
+    new_memo = Memo(title, cat)
+    
+    date = input('Enter memo date (DD/MM/YY) if required, return(enter) if not: ')
+    if date != '':
+        new_memo.start_date = date
+    notes = input('Enter memo notes if required, return(enter) if not: ')
+    if notes != '':
+        new_memo.notes = notes
+    memos.items.append(new_memo)
+    clear_console()
+        
+    
+    
     
 def create_collection(collections):
     name = input("Collection name: ")
