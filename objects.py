@@ -5,11 +5,11 @@ def clear_console():
 
 
 class Item:
-    def __init__(self, name, subcat):
+    def __init__(self, name, subcat, start_date='N/A', stock=0):
         self.name = name
         self.subcat = subcat
-        self.start_date = 'N/A'
-        self.stock = 0
+        self.start_date = start_date
+        self.stock = stock
 
     def view_item(self):
         print(f"======== {self.name} ========")
@@ -27,10 +27,21 @@ class Item:
             return
 
 class Count(Item):
-    pass
+    def __init__(self, name, subcat, start_date, stock, count_per_item):
+        super().__init__(name, subcat, start_date, stock)
+        self.count_per_item = count_per_item
+        
+        if self.start_date != 'N/A':
+            active_item = 
+        current
 
-class Volume(Item):
-    pass
+    def manage_count(self, count_used):
+
+
+class Measure(Item):
+    def __init__(self, name, subcat, start_date, stock, measure_per_item):
+        super().__init__(name, subcat, start_date, stock)
+        self.measure_per_item = measure_per_item
 
 class Collection:
     def __init__(self, name):
@@ -103,13 +114,13 @@ class Memos:
             if not self.items:
                 print('No memos!')
                 return
-            base_memo = f"[{self.items.index(memo)+1}] - {memo.start_date} | {memo.name}"
+            base_memo = f"[{self.items.index(memo)+1}] {memo.name} | {memo.start_date}"
             if memo.notes != 'N/A':
-                print(f'{base_memo}\n{memo.notes}')
+                print(f'{base_memo}\n-> {memo.notes}\n')
             else:
-                print(base_memo)
+                print(f'{base_memo}\n')
         
-        menu_choice = input('\n=======================\nActions:\n[1]Delete a memo\n[0]Return\nEnter choice: ')
+        menu_choice = input('=======================\nActions:\n[1]Delete a memo\n[0]Return\nEnter choice: ')
         if menu_choice == '1':
              del_choice = input('Enter memo no. to delete (or 0 to exit): ')
              if del_choice == '0':
