@@ -28,7 +28,7 @@ with open('collection_save.pkl', 'rb') as f:
 
 
 
-
+#TO-DO: Add fn for objects (toggle) that will display 'need to buy' in reminders when empty (i.e. bread, eggs, milk)
 
 def main():
     while True:

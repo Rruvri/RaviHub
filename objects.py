@@ -14,7 +14,7 @@ class Item:
     def view_item(self):
         print(f"======== {self.name} ========")
         print(f'[1]Name: {self.name}\n[2]Subcategory: {self.subcat}\n[3]Active Start Date: {self.start_date}\n[4]Extra Stock: {self.stock}')
-        option_select = input('Enter trait number to edit, or 0 to exit: ')
+        option_select = input('Enter trait number to edit, [5] to set item measure parameters, or [0] to exit: ')
         if option_select == '1':
             self.name = input('Enter new item name: ')
         elif option_select == '2':
@@ -23,25 +23,76 @@ class Item:
             self.start_date = input('Enter start date for current item (DD/MM/YY): ')
         elif option_select == '4':
             self.stock = input('Enter number of items in stock (excluding current active item): ')
+        #TO-DO - add option to define count/measure subclass 
+        elif option_select == '5':
+            #item_measure_parameters = input('')
+            pass
         elif option_select == '0':
             return
+        
+
+
+
+
+
+
 
 class Count(Item):
     def __init__(self, name, subcat, start_date, stock, count_per_item):
         super().__init__(name, subcat, start_date, stock)
         self.count_per_item = count_per_item
         
+        self.item_avg_history = []
+        
+        self.active_item = []
+
         if self.start_date != 'N/A':
-            active_item = 
-        current
+            self.active_item.append(self.start_date, self.count_per_item)
+        
 
     def manage_count(self, count_used):
-
+        self.active_item[1] - count_used
+        if self.active_item[1] < 1:
+            end_date = input("Enter active item's finish date (DD/MM/YY): ")
+            item_avg = {'Start date':self.active_item[0], 'End date':end_date} #TO-DO: add averaging method
+            self.item_avg_history.append(item_avg)
+            self.active_item = []
+            self.start_date = 'N/A'
 
 class Measure(Item):
-    def __init__(self, name, subcat, start_date, stock, measure_per_item):
+    def __init__(self, name, subcat, start_date, stock, measure_per_item, item_unit_measure):
         super().__init__(name, subcat, start_date, stock)
         self.measure_per_item = measure_per_item
+        self.item_unit_measure = item_unit_measure
+
+        self.item_avg_history = []
+
+        self.active_item = []
+
+        if self.start_date != 'N/A':
+            self.active_item.append(self.start_date, self.measure_per_item, 0)
+
+    def manage_measure(self, count_used=0, amount_used=0):
+        
+        self.active_item[2] + count_used
+        
+        self.active_item[1] - amount_used
+
+        if self.active_item[1] == 0:
+            end_date = input("Enter active item's finish date (DD/MM/YY): ")
+            item_avg = {'Start date':self.active_item[0], 'End date':end_date} #TO-DO: add averaging method
+            self.item_avg_history.append(item_avg)
+            self.active_item = []
+            self.start_date = 'N/A'
+        
+        
+
+
+
+
+
+
+
 
 class Collection:
     def __init__(self, name):
