@@ -5,29 +5,44 @@ import sys
 import time
 import pickle
 
-from newobjects import *
-from tracking import *
+from objects import *
+
 
 def clear_console():
     os.system('clear')
 
+
+test_item = Item('test', 'Testers', 'Testes')
+
+def main():
+    test_item.view_item_traits()
+
+
 # Set-Up
     
+
+
+
+
+
+
+
+
+'''
+
 collections = []
 memos = Memos()
 
-with open('collection_save.pkl', 'rb') as f:
-    
-    collections_load = pickle.load(f)
-    
-    collections = collections_load[0]
-    memos = collections_load[1]
+current_directory = os.getcwd()
 
+if os.path.isfile(f'{current_directory}/collection_save.pkl'):
 
-
-
-
-
+    with open('collection_save.pkl', 'rb') as f:
+        
+        collections_load = pickle.load(f)
+        
+        collections = collections_load[0]
+        memos = collections_load[1]
 
 
 #TO-DO: Add fn for objects (toggle) that will display 'need to buy' in reminders when empty (i.e. bread, eggs, milk)
@@ -92,7 +107,7 @@ def main():
             time.sleep(1)
             sys.exit()
 
-            
+'''      
          
             
 

@@ -1,5 +1,8 @@
 import time
 import os
+
+
+
 def clear_console():
     os.system('clear')
 
@@ -11,10 +14,13 @@ class Item:
         self.start_date = start_date
         self.stock = stock
 
+        self.base_options = f'[1]Name: {self.name}\n[2]Subcategory: {self.subcat}\n[3]Active Start Date: {self.start_date}\n[4]Extra Stock: {self.stock}'
+    
     def view_item(self):
         print(f"======== {self.name} ========")
-        print(f'[1]Name: {self.name}\n[2]Subcategory: {self.subcat}\n[3]Active Start Date: {self.start_date}\n[4]Extra Stock: {self.stock}')
-        option_select = input('Enter trait number to edit, [5] to set item measure parameters, or [0] to exit: ')
+        print(self.base_options)
+    
+        option_select = input('Enter trait number to edit, or [0] to exit: ')    
         if option_select == '1':
             self.name = input('Enter new item name: ')
         elif option_select == '2':
@@ -24,9 +30,10 @@ class Item:
         elif option_select == '4':
             self.stock = input('Enter number of items in stock (excluding current active item): ')
         #TO-DO - add option to define count/measure subclass 
-        elif option_select == '5':
-            #item_measure_parameters = input('')
-            pass
+        
+    
+
+        
         elif option_select == '0':
             return
         
@@ -41,6 +48,8 @@ class Count(Item):
     def __init__(self, name, subcat, start_date, stock, count_per_item):
         super().__init__(name, subcat, start_date, stock)
         self.count_per_item = count_per_item
+
+        self.base_options = self.base_options + f'\n[5]Units per item: {self.count_per_item}'
         
         self.item_avg_history = []
         
@@ -49,7 +58,13 @@ class Count(Item):
         if self.start_date != 'N/A':
             self.active_item.append(self.start_date, self.count_per_item)
         
-
+    def view_item(self):
+        super(Count, self).view_item
+        
+        if super().view_item.option_select == '5':
+            self.count_per_item = input('Enter new units per item: ')
+            
+    
     def manage_count(self, count_used):
         self.active_item[1] - count_used
         if self.active_item[1] < 1:
@@ -58,6 +73,7 @@ class Count(Item):
             self.item_avg_history.append(item_avg)
             self.active_item = []
             self.start_date = 'N/A'
+    
 
 class Measure(Item):
     def __init__(self, name, subcat, start_date, stock, measure_per_item, item_unit_measure):
@@ -114,7 +130,7 @@ class Collection:
 
         
     def menu_actions(self): 
-        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[0]Exit\n") 
+        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[0]Exit\n") 
         menu_action = input("Enter choice: ")
         
         if menu_action == "1":
@@ -132,7 +148,24 @@ class Collection:
             new_name = input("Enter new collection name: ")
             self.name = new_name
             self.view_collection()
-        
+
+
+        elif menu_action == '4':
+            select_item = input('Enter item number: ')
+            
+            selected_item = self.items[int(select_item)-1]
+            
+            print(f'Selected: {selected_item.name}')
+            
+            item_measure_parameters = input('Is the item a [C]ountable (i.e. a pack of SIX eggs), or a [M]easurable (i.e. a ONE KG bag of lentils)? Enter choice: ')
+            
+            if item_measure_parameters == 'c'.lower():
+                count_per_item = input('Enter the number of uses each new item has (i.e., a pack of SIX eggs has 6 uses): ')
+                new_count_item = Count(selected_item.name, selected_item.subcat, selected_item.start_date, selected_item.stock, count_per_item)
+                self.items.pop(int(select_item)-1)
+                self.items.append(new_count_item)    
+                
+                        
         elif menu_action == "0":
             clear_console()
 
