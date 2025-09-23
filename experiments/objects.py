@@ -9,48 +9,144 @@ def clear_console():
 
 
 class Item:
-    def __init__(self, name, cat, subcat, specifics='N/A'):
-        
-        
-        
+    def __init__(self, name, col, subcol):
+    
         self.name = name
-        self.cat = cat
-        self.subcat = subcat
-        self.specifics = specifics
+        self.col = col
+        self.subcol = subcol
+        self.active_item = [] 
+        self.stock = 0       
         
         self.item_dict = {'Name': self.name,
-                           'Category': self.cat,
-                             'Subcategory': self.subcat,
-                               'Specifics': self.specifics}
+                           'Collection': self.col,
+                             'Subcollection': self.subcol,
+                               'Specifics': 'N/A'}
 
-    
-
-
+    #TODO - Define active item
 
     def view_item_traits(self):
         print(f"======== {self.name} ========")
         index_num = 1
-        trait_list = list(self.item_dict.keys())
         for key, value in self.item_dict.items():
             print(f'[{index_num}] {key}: {value}')
             index_num +=1
-    
-def edit_item(self):
+        self.edit_item()
 
+    def edit_item(self):
+        trait_list = list(self.item_dict.keys())
         option_select = input('Enter trait number to edit, or [0] to exit: ')  
+        
         if option_select == '0':
             return
-        elif int(option_select) > len(trait_list)+1:
-            return 'Invalid option, please try again or exit'
         
+        #This is messy exit code, need to handle the errors
+        elif int(option_select) > len(trait_list):
+            print('Invalid option, please try again or exit')
+            clear_console()
+            self.view_item_traits()
+
         change = input(f'Enter change for {trait_list[int(option_select)-1]}: ')
         self.item_dict[trait_list[int(option_select)-1]] = change
+        
+        self.view_item_traits()
+
+    def set_active_item(self, start_date):
+        self.active_item = [start_date]
+        #return self.active_item
+    def set_stock(self, new_stock):
+        self.stock = int(new_stock)
+        
 
 
 
+class Collection:
+    def __init__(self, name):
+        self.name = name
+        self.subcols = []
+        
+    def view_collection(self):
+        clear_console()
+        
+        print(f"======== {self.name.upper()} ========")
+        
+        if not self.subcols:
+            print("(empty!)")
+            time.sleep(1.5)
+            clear_console()
+        
+        for subcol in self.subcols:
+            print(f'----{subcol.name}----')
+            for item in subcol.items:
+                base_item_info = f"[{subcol.items.index(item)+1}] {item.name} ({item.subcol})"
+                print(base_item_info)
+                #print( | Active start date: {item.start_date} ({item.stock} in stock)")
+    
+    def add_item(self, item):
+        if item.subcol not in list(map(lambda subcol: subcol.name, self.subcols)):
+            new_subcol = Subcollection(item.subcol, '', self.name)
+            self.subcols.append(new_subcol)
+            
+        for subcol in self.subcols:
+            if item.subcol == subcol.name:
+                subcol.items.append(item)
+
+        self.view_collection()
+        
+            
+class Subcollection(Collection):
+    def __init__(self, name, parent_col):
+        super().__init__(name)
+        self.parent_col = parent_col
+        self.items = []
+    
+    
+        
+
+    ''' 
+    self.menu_actions()   
+    def menu_actions(self): 
+        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[0]Exit\n") 
+        menu_action = input("Enter choice: ")
+        
+        if menu_action == "1":
+            name = input("Item name: ")
+            subcat = input("Item subcategory: ")
+            self.items.append(Item(name,subcat))
+            self.view_collection()
+        
+        elif menu_action == '2':
+            select_item = input('Enter item number: ')
+            self.items[int(select_item)-1].view_item()
+            self.view_collection()
+
+        elif menu_action == "3":
+            new_name = input("Enter new collection name: ")
+            self.name = new_name
+            self.view_collection()
 
 
+        elif menu_action == '4':
+            select_item = input('Enter item number: ')
+            
+            selected_item = self.items[int(select_item)-1]
+            
+            print(f'Selected: {selected_item.name}')
+            
+            item_measure_parameters = input('Is the item a [C]ountable (i.e. a pack of SIX eggs), or a [M]easurable (i.e. a ONE KG bag of lentils)? Enter choice: ')
+            
+            if item_measure_parameters == 'c'.lower():
+                count_per_item = input('Enter the number of uses each new item has (i.e., a pack of SIX eggs has 6 uses): ')
+                new_count_item = Count(selected_item.name, selected_item.subcat, selected_item.start_date, selected_item.stock, count_per_item)
+                self.items.pop(int(select_item)-1)
+                self.items.append(new_count_item)    
+                
+                        
+        elif menu_action == "0":
+            clear_console()
+        '''
 
+
+        
 
 
 
@@ -159,64 +255,7 @@ class Measure(Item):
 
 
 
-class Collection:
-    def __init__(self, name):
-        self.name = name
-        self.items = []
 
-    def view_collection(self):
-        clear_console()
-        print(f"======== {self.name} ========")
-        
-        if not self.items:
-            print("(empty!)")
-            time.sleep(1.5)
-            clear_console()
-
-        for item in self.items:
-            print(f"[{self.items.index(item)+1}] {item.name} ({item.subcat}) | Active start date: {item.start_date} ({item.stock} in stock)")
-        self.menu_actions()
-
-        
-    def menu_actions(self): 
-        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[0]Exit\n") 
-        menu_action = input("Enter choice: ")
-        
-        if menu_action == "1":
-            name = input("Item name: ")
-            subcat = input("Item subcategory: ")
-            self.items.append(Item(name,subcat))
-            self.view_collection()
-        
-        elif menu_action == '2':
-            select_item = input('Enter item number: ')
-            self.items[int(select_item)-1].view_item()
-            self.view_collection()
-
-        elif menu_action == "3":
-            new_name = input("Enter new collection name: ")
-            self.name = new_name
-            self.view_collection()
-
-
-        elif menu_action == '4':
-            select_item = input('Enter item number: ')
-            
-            selected_item = self.items[int(select_item)-1]
-            
-            print(f'Selected: {selected_item.name}')
-            
-            item_measure_parameters = input('Is the item a [C]ountable (i.e. a pack of SIX eggs), or a [M]easurable (i.e. a ONE KG bag of lentils)? Enter choice: ')
-            
-            if item_measure_parameters == 'c'.lower():
-                count_per_item = input('Enter the number of uses each new item has (i.e., a pack of SIX eggs has 6 uses): ')
-                new_count_item = Count(selected_item.name, selected_item.subcat, selected_item.start_date, selected_item.stock, count_per_item)
-                self.items.pop(int(select_item)-1)
-                self.items.append(new_count_item)    
-                
-                        
-        elif menu_action == "0":
-            clear_console()
 
 
 

@@ -24,6 +24,16 @@ with open('collection_save.pkl', 'rb') as f:
     memos = collections_load[1]
 
 
+            
+            
+            
+        
+    
+
+
+
+        
+            
 
 
 
@@ -41,6 +51,7 @@ def main():
         for col in collections:
             print(f"{col.name}: {[item.name for item in col.items]}")
         print("=======================\n")
+        
         
 #Main Menu + Options
 

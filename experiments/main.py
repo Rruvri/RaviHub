@@ -13,9 +13,13 @@ def clear_console():
 
 
 test_item = Item('test', 'Testers', 'Testes')
-
+test2 = Item('2', 'Test2', 'testing')
+Test_col = Collection('Test2',)
 def main():
-    test_item.view_item_traits()
+    Test_col.subcols.append(Subcollection('testing', '', 'Test_col'))
+    Test_col.add_item(test2)
+    Test_col.view_collection()
+    
 
 
 # Set-Up
