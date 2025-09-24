@@ -28,22 +28,23 @@ class Item:
 
     def activate_new_item(self, unit='N/A'):
         if self.active_item:
-            print(f'[Current active item]\nStart: {self.active_item[0][0]}\nEnd: {self.active_item[0][1]}')
+            print(f'[Current active item]\nStart: {self.active_item[0][0]}')
             confirm_new_active = input('Confirm new active item (current will be saved to history)? [Y/N]: ')
             if confirm_new_active == 'y'.lower():
                 if len(self.active_item[0]) == 1:
                     self.conclude_item()
                     
         start = input('Enter start date of new item use: ')
-        self.active_item = [(start, ), (unit, 0)]
+        self.active_item = [(start, ), (unit, unit)]
 
 
     def conclude_item(self):
         end_date = input('Enter end date for current [DD/MM/YY]: ')
-        final_date_stats = self.active_item[0] + (end_date,)
-        self.active_item[0][1] = final_date_stats
-        self.item_history.append(self.active_item)
-        del self.active_item[1]
+        self.active_item[0] + (end_date,)
+        archive_copy = self.active_item
+
+        self.item_history.append(archive_copy)
+        self.active_item = []
         self.stock -= 1
 
     def use_item(self, uses):
@@ -109,9 +110,10 @@ class Count(Item):
         tot_copy = int(self.active_item[1][0])
         count_copy = int(self.active_item[1][1])
         new_active_count = int(count_copy - count_used)
-        if new_active_count >= tot_copy:
-            self.conclude_item()
         self.active_item[1] = (tot_copy, new_active_count)
+        if int(new_active_count) <= 0:
+            self.conclude_item()
+        
         
             
             
@@ -172,7 +174,7 @@ class Collection:
             if item.active_item:
                 base_active = f'   -> Active item | Start date: {item.active_item[0][0]}' 
                 if item.item_dict["Measure Type"] == 'Count (per item)':
-                    base_active = base_active + f' [{int(item.active_item[1][0]) + int(item.active_item[1][1])}/{item.active_item[1][0]} remaining]'
+                    base_active = base_active + f' [{int(item.active_item[1][1])}/{item.active_item[1][0]} remaining]'
                     
                 print(base_active+'\n')
 
