@@ -173,7 +173,7 @@ class Collection:
 
         
     def menu_actions(self): 
-        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[0]Exit\n") 
+        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[0]Exit\n") 
         menu_action = input("Enter choice: ")
         
         if menu_action == "1":
@@ -218,6 +218,11 @@ class Collection:
             select_item = input('Enter item number: ')
             use_amount = input('Enter amount used: ')
             self.items[int(select_item)-1].use_item(int(use_amount))
+            self.view_collection()
+
+        elif menu_action == '7':
+            select_item = input('Enter item number: ')
+            self.items[int(select_item)-1].update_stock()
             self.view_collection()
                         
         elif menu_action == "0":
