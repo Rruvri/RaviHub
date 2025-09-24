@@ -54,6 +54,7 @@ class Item:
         self.stock = input('Enter new stock number: ')
 
     def view_item_traits(self):
+        clear_console()
         print(f"======== {self.name} ========")
         index_num = 1
         for key, value in self.item_dict.items():
@@ -77,6 +78,12 @@ class Item:
 
         change = input(f'Enter change for {trait_list[int(option_select)-1]}: ')
         self.item_dict[trait_list[int(option_select)-1]] = change
+        
+
+        if trait_list[int(option_select)-1] == 'Name':
+            self.name = change
+        elif trait_list[int(option_select)-1] == 'Subcollection':
+            self.subcol = change
         
         self.view_item_traits()
     
