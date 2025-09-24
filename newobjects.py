@@ -47,7 +47,7 @@ class Item:
         self.stock -= 1
 
     def use_item(self, uses):
-        pass
+        self.stock -= int(uses)
     
     def update_stock(self):
         print(f'In stock (excluding current active item): {self.stock}')
@@ -90,16 +90,21 @@ class Count(Item):
         self.count_per_item = count_per_item
         self.item_dict["Measure Type"] = 'Count (per item)'
         self.item_dict["Count per Unit"] = count_per_item
+
+        if self.active_item:
+            self.active_item[1] = (self.count_per_item, 0)
       
     def activate_new_item(self, unit='N/A'):
         return super().activate_new_item(self.count_per_item)
     
     def use_item(self, count_used):
-        count_copy = int(self.active_item[1][0])
+        
+        tot_copy = int(self.active_item[1][0])
+        count_copy = int(self.active_item[1][1])
         new_active_count = int(count_copy - count_used)
-        if new_active_count < 1:
+        if new_active_count >= tot_copy:
             self.conclude_item()
-        self.active_item[1] = (new_active_count,)
+        self.active_item[1] = (tot_copy, new_active_count)
         
             
             
@@ -160,7 +165,8 @@ class Collection:
             if item.active_item:
                 base_active = f'   -> Active item | Start date: {item.active_item[0][0]}' 
                 if item.item_dict["Measure Type"] == 'Count (per item)':
-                    base_active = base_active + f' [{item.active_item[1][1]}/{item.active_item[1][0]} used]'
+                    base_active = base_active + f' [{int(item.active_item[1][0]) + int(item.active_item[1][1])}/{item.active_item[1][0]} remaining]'
+                    
                 print(base_active+'\n')
 
         self.menu_actions()
@@ -212,7 +218,7 @@ class Collection:
             select_item = input('Enter item number: ')
             use_amount = input('Enter amount used: ')
             self.items[int(select_item)-1].use_item(int(use_amount))
-                
+            self.view_collection()
                         
         elif menu_action == "0":
             clear_console()

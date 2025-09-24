@@ -26,10 +26,12 @@ with open('collection_save.pkl', 'rb') as f:
 
             
             
-            
-        
-    
-
+'''            
+for c in collections:
+    for item in c.items:
+        if item.active_item:
+            print(item.name, item.active_item)
+'''
 
 
         
@@ -114,3 +116,4 @@ def main():
     
 
 main()
+
