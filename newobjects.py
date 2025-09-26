@@ -46,6 +46,8 @@ class Item:
         self.item_history.append(archive_copy)
         self.active_item = []
         self.stock -= 1
+        if self.stock < 0:
+            self.stock = 0
 
     def use_item(self, uses):
         self.stock -= int(uses)
@@ -289,7 +291,7 @@ class Memos:
 
 class Memo(Item):
     def __init__(self, name, subcat):
-        super().__init__(name, subcat)
+        super().__init__(name, 'memos', subcat)
         self.notes = 'N/A'
         self.start_date = 'N/A'
     

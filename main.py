@@ -6,7 +6,7 @@ import time
 import pickle
 
 from newobjects import *
-from tracking import *
+from tracking import c_d_formatted
 
 def clear_console():
     os.system('clear')
@@ -39,14 +39,14 @@ for c in collections:
 
 
 
-
+clear_console()
 
 
 #TO-DO: Add fn for objects (toggle) that will display 'need to buy' in reminders when empty (i.e. bread, eggs, milk)
 
 def main():
     while True:
-        
+        print(c_d_formatted)
         print("======= RaviHub =======\n->Reminders:")
         memos.view_collection()
         print("\n->Open Collections:")

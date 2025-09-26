@@ -1,21 +1,8 @@
-import datetime
-
-current_datetime = datetime.datetime.now()
-# current_datetime.strftime(%c) - formats dt correctlee
-
-def timer():
-    print(f'| {current_datetime.strftime('%c')} |')
-    time.sleep(60)
-    return timer()
+from datetime import *
 
 
-main_body = f'| {current_datetime.strftime('%c')} |'
+current_date = date.today()
 
-'''
-upper_body = 
-    for bound in range (0, len(main_body)-1):
-        bound = '_'
+output_format = '%d/%m/%y'
 
-        ''.join()
-
-'''
+c_d_formatted = datetime.strftime(current_date, output_format)
