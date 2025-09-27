@@ -102,7 +102,7 @@ class Count(Item):
         self.item_dict["Count per Unit"] = count_per_item
 
         if self.active_item:
-            self.active_item[1] = (self.count_per_item, 0)
+            self.active_item[1] = (self.count_per_item, self.count_per_item)
       
     def activate_new_item(self, unit='N/A'):
         return super().activate_new_item(self.count_per_item)
@@ -123,30 +123,46 @@ class Count(Item):
         
 
 class Measure(Item):
-    def __init__(self, name, subcat, start_date, stock, measure_per_item, item_unit_measure):
-        super().__init__(name, subcat, start_date, stock)
+    def __init__(self, name, col, subcat, item_dict, active_item, stock, item_history, measure_per_item, measure_unit, use_style):
+        super().__init__(name, col, subcat, item_dict, active_item, stock, item_history)
         self.measure_per_item = measure_per_item
-        self.item_unit_measure = item_unit_measure
+        self.measure_unit = measure_unit
+        self.use_style = use_style
+        self.item_dict["Measure Type"] = 'Weight (per item)'
+        self.item_dict["Measure per Unit"] = measure_per_item
+        self.item_dict["Measure Unit"] = measure_unit
+        self.item_dict["Use Style"] = use_style
 
-        self.item_avg_history = []
+        if self.active_item:
+            if self.item_dict['Use Style'] == 'Average': 
+                self.active_item[1] = (self.measure_per_item, 0)
+            elif self.item_dict['Use Style'] == 'Percentage': 
+                self.active_item[1] == (self.measure_per_item, self.measure_per_item)
+    
+    def activate_new_item(self, unit='N/A'):
+        return super().activate_new_item(self.measure_per_item)
+    
 
-        self.active_item = []
+    def use_item(self, count_used):
+        tot_copy = int(self.active_item[1][0])
+        count_copy = int(self.active_item[1][1])
+        
+        if self.item_dict['Use Style'] == 'Average': 
+            new_active_count = int(count_copy + count_used)
+            self.active_item[1] = (tot_copy, new_active_count)
+        
+        elif self.item_dict['Use Style'] == 'Percentage':
+            perc_used = (float(count_used) * tot_copy)
+            
 
-        if self.start_date != 'N/A':
-            self.active_item.append(self.start_date, self.measure_per_item, 0)
-
+            
+'''
     def manage_measure(self, count_used=0, amount_used=0):
         
         self.active_item[2] + count_used
         
         self.active_item[1] - amount_used
-
-        if self.active_item[1] == 0:
-            end_date = input("Enter active item's finish date (DD/MM/YY): ")
-            item_avg = {'Start date':self.active_item[0], 'End date':end_date} #TO-DO: add averaging method
-            self.item_avg_history.append(item_avg)
-            self.active_item = []
-            self.start_date = 'N/A'
+'''
         
         
 
@@ -177,7 +193,11 @@ class Collection:
                 base_active = f'   -> Active item | Start date: {item.active_item[0][0]}' 
                 if item.item_dict["Measure Type"] == 'Count (per item)':
                     base_active = base_active + f' [{int(item.active_item[1][1])}/{item.active_item[1][0]} remaining]'
-                    
+
+                #this will be measure 
+                elif item.item_dict["Measure Type"] == 'Weight (per item)':
+                    pass
+
                 print(base_active+'\n')
 
         self.menu_actions()
@@ -218,6 +238,20 @@ class Collection:
                 new_count_item = Count(selected_item.name, selected_item.col, selected_item.subcat, selected_item.item_dict, selected_item.active_item, selected_item.stock, selected_item.item_history, count_per_item)
                 self.items.pop(int(select_item)-1)
                 self.items.append(new_count_item)
+
+
+            elif item_measure_parameters == 'm'.lower():
+                measure_unit = input('Enter the metric used to measure the item in its shorthand form (i.e. [g] for grams)')
+                measure_per_item = input('Enter the numeric measurement of the item (i.e. [1]kg bag of lentils)')
+                use_style_check = input('Will the item be tracked on a [a]verage count method (i.e. recording number of cigarettes), or rough [p]ercentage tracker (i.e. using 50 percent of a bag of lentils)?')
+                if use_style_check == 'a':
+                    use_style = 'Average count'
+                elif use_style_check == 'p':
+                    use_style = 'Percentage estimate'
+                new_measure_item = Measure(selected_item.name, selected_item.col, selected_item.subcat, selected_item.item_dict, selected_item.active_item, selected_item.stock, selected_item.item_history, measure_per_item, measure_unit, use_style)
+
+
+
             self.view_collection()
 
         elif menu_action == '5':
@@ -227,6 +261,7 @@ class Collection:
         
         elif menu_action == '6':
             select_item = input('Enter item number: ')
+            
             use_amount = input('Enter amount used: ')
             self.items[int(select_item)-1].use_item(int(use_amount))
             self.view_collection()
