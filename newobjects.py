@@ -1,5 +1,6 @@
 import time
 import os
+from tracking import c_d_formatted
 
 
 
@@ -40,7 +41,9 @@ class Item:
 
     def conclude_item(self):
         end_date = input('Enter end date for current [DD/MM/YY]: ')
-        self.active_item[0] + (end_date,)
+        s_d_copy = self.active_item[0][0]
+        self.active_item[0] = (s_d_copy, end_date)
+         
         archive_copy = self.active_item
 
         self.item_history.append(archive_copy)
@@ -52,6 +55,14 @@ class Item:
 
     def use_item(self, uses):
         self.stock -= int(uses)
+        if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
+            c_d_use_copy = int(self.active_item[(len(self.active_item)-1)][1])
+            c_d_use_copy += int(uses)
+            self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
+        else:
+            self.active_item.append((c_d_formatted, uses))
+
+
     
     def update_stock(self):
         print(f'In stock (excluding current active item): {self.stock}')
@@ -91,6 +102,10 @@ class Item:
         
         self.view_item_traits()
     
+    def view_history(self):
+        for tuple in self.item_history:
+            print(f'{tuple[0]} | {tuple[1]}')
+        
     
         
         
@@ -114,6 +129,14 @@ class Count(Item):
         count_copy = int(self.active_item[1][1])
         new_active_count = int(count_copy - count_used)
         self.active_item[1] = (tot_copy, new_active_count)
+
+        if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
+            c_d_use_copy = int(self.active_item[(len(self.active_item)-1)][1])
+            c_d_use_copy += int(count_used)
+            self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
+        else:
+            self.active_item.append((c_d_formatted, count_used))
+
         if int(new_active_count) <= 0:
             self.conclude_item()
         
@@ -154,11 +177,29 @@ class Measure(Item):
         if self.item_dict['Use Style'] == 'Average': 
             new_active_count = int(count_copy + count_used)
             self.active_item[1] = (tot_copy, new_active_count)
-        
+
+            if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
+                c_d_use_copy = int(self.active_item[(len(self.active_item)-1)][1])
+                c_d_use_copy += int(count_used)
+                self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
+            else:
+                self.active_item.append((c_d_formatted, count_used))
+
+
+
         elif self.item_dict['Use Style'] == 'Percentage':
             perc_used = (float(count_used / 100)) * float(tot_copy)
             new_active_count = int(count_copy) + perc_used 
             self.active_item[1] = (tot_copy, new_active_count)
+            
+
+            if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
+                c_d_use_copy = float(self.active_item[(len(self.active_item)-1)][1])
+                c_d_use_copy += perc_used
+                self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
+            else:
+                self.active_item.append((c_d_formatted, count_used))
+            
             if tot_copy <= new_active_count:
                 self.conclude_item()
             
@@ -215,7 +256,7 @@ class Collection:
 
         
     def menu_actions(self): 
-        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[0]Exit\n") 
+        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[8]View item history\n[0]Exit\n") 
         menu_action = input("Enter choice: ")
         
         if menu_action == "1":
@@ -281,6 +322,12 @@ class Collection:
         elif menu_action == '7':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].update_stock()
+            self.view_collection()
+        
+        elif menu_action == '8':
+            select_item = input('Enter item number: ')
+            self.items[int(select_item)-1].view_history()
+            exit_check = input('Press any key to exit')
             self.view_collection()
                         
         elif menu_action == "0":
