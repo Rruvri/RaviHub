@@ -1,73 +1,41 @@
-import time
-import os
+from sysfunc import clear_console
 from tracking import c_d_formatted
+import time
 
 
 
-def clear_console():
-    os.system('clear')
+def input_to_dt():
+    pass
+
+
+
+
+
 
 
 class Item:
-    def __init__(self, name, col, subcat, item_dict={}, active_item=[], stock=0, item_history=[]):
+    def __init__(self, name, col, subcat):
         self.name = name
-        self.subcat = subcat
         self.col = col
-        self.stock = stock
-        self.item_dict = item_dict
-        self.active_item = active_item
-        self.item_history = item_history
-        self.init_dict()
+        self.subcat = subcat
 
-    def init_dict(self):
+        #for c in cols:
+         #   if col.lower() == c.name.lower():
+         #Move this to a main function
+
+        
+        self.stock = 0
         self.item_dict = {'Name': self.name,
                            'Collection': self.col,
                              'Subcollection': self.subcat,
-                               'Brand': 'N/A',
-                               'Price': 'N/A',
-                               'Measure Type': 'N/A'}
+                             'Measure Type': 'N/A'}
+        
+        self.item_variants = []
+        
+        self.item_history = []
 
-    def activate_new_item(self, unit='N/A'):
-        if self.active_item:
-            print(f'[Current active item]\nStart: {self.active_item[0][0]}')
-            confirm_new_active = input('Confirm new active item (current will be saved to history)? [Y/N]: ')
-            if confirm_new_active == 'y'.lower():
-                if len(self.active_item[0]) == 1:
-                    self.conclude_item()
-                    
-        start = input('Enter start date of new item use: ')
-        self.active_item = [(start, ), (unit, unit)]
-
-
-    def conclude_item(self):
-        end_date = input('Enter end date for current [DD/MM/YY]: ')
-        s_d_copy = self.active_item[0][0]
-        self.active_item[0] = (s_d_copy, end_date)
-         
-        archive_copy = self.active_item
-
-        self.item_history.append(archive_copy)
-        self.active_item = []
-        self.stock = int(self.stock)
-        self.stock -= 1
-        if self.stock < 0:
-            self.stock = 0
-
-    def use_item(self, uses):
-        self.stock -= int(uses)
-        if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
-            c_d_use_copy = int(self.active_item[(len(self.active_item)-1)][1])
-            c_d_use_copy += int(uses)
-            self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
-        else:
-            self.active_item.append((c_d_formatted, uses))
-
-
+        self.active_item = {}
     
-    def update_stock(self):
-        print(f'In stock (excluding current active item): {self.stock}')
-        self.stock = input('Enter new stock number: ')
-
     def view_item_traits(self):
         clear_console()
         print(f"======== {self.name} ========")
@@ -75,80 +43,105 @@ class Item:
         for key, value in self.item_dict.items():
             print(f'[{index_num}] {key}: {value}')
             index_num +=1
-
-        self.edit_item()
+        exit = input('[return] to exit')
+        #then would need the variant stuff below, do this later
     
     def edit_item(self):
-        trait_list = list(self.item_dict.keys()) 
-        option_select = input('Enter trait number to edit, or [0] to exit: ')  
-        
-        if option_select == '0':
+        choice = input('...[enter] to go back')
+        if choice == '':
             return
+        #doing full edit later
+    
+    def update_stock(self):
+            print(f'In stock (excluding current active item): {self.stock}')
+            self.stock = input('Enter new stock number: ')
+
+    def activate_item(self):
+        if self.active_item:
+            self.conclude_item()
+
+        s_d = input('Enter start date of new item [DD/MM/YY]: ')
+        self.active_item = {'Start Date': s_d,
+                             'Uses': 0,
+                               'End Date': None,
+                                 'Use Log': {}}
         
-        #This is messy exit code, need to handle the errors
-        elif int(option_select) > len(trait_list):
-            print('Invalid option, please try again or exit')
+
+    def conclude_item(self):
+        print(f'\nYou currently have an active item!\n  Start: {self.active_item['Start Date']}\n   Uses: {self.active_item['Uses']}')
+        old_end = input('\nEnter the end date [DD/MM/YY] for this item, or [return] to go back')
+        if old_end == '':
             clear_console()
-            self.view_item_traits()
-
-        change = input(f'Enter change for {trait_list[int(option_select)-1]}: ')
-        self.item_dict[trait_list[int(option_select)-1]] = change
+            return self.view_item()
         
+        self.active_item['End Date'] = old_end
+        archive_copy = self.active_item
+        self.item_history.append(archive_copy)
+        self.active_item = False
 
-        if trait_list[int(option_select)-1] == 'Name':
-            self.name = change
-        elif trait_list[int(option_select)-1] == 'Subcollection':
-            self.subcol = change
+        if self.stock > 0:
+            self.stock -= 1
+
+    def use_item(self):
+        if not self.active_item:
+            self.activate_item()
+        uses = input('Enter amount used: ')
+            
+        use_copy = self.active_item['Uses']
+        use_copy += int(uses)
+        self.active_item['Uses'] = int(use_copy) #might need to check these for int(/ str clash 
+
         
-        self.view_item_traits()
-    
+        current_date_uses = int(self.active_item["Use Log"].get(c_d_formatted, 0))
+        self.active_item['Use Log'][f'{c_d_formatted}'] = current_date_uses + int(uses)
+                
     def view_history(self):
-        for tuple in self.item_history:
-            print(f'{tuple[0]} | {tuple[1]}')
-        
+        for hist_log in self.item_history:
+            print(f'{hist_log}\n')
+
+    def add_item_group(self, group):
+        self.item_dict['Groups'] = group
     
-        
-        
+
+
+
+# Subclasses
 
 class Count(Item):
     def __init__(self, name, col, subcat, item_dict, active_item, stock, item_history, count_per_item):
-        super().__init__(name, col, subcat, item_dict, active_item, stock, item_history)
+        super().__init__(name, col, subcat)
+        self.stock = stock
+        self.item_dict = item_dict
+        self.active_item = active_item
+        self.item_history = item_history
+        
         self.count_per_item = count_per_item
         self.item_dict["Measure Type"] = 'Count (per item)'
-        self.item_dict["Count per Unit"] = count_per_item
+        self.item_dict["Count per Unit"] = int(count_per_item)
 
-        if self.active_item:
-            self.active_item[1] = (self.count_per_item, self.count_per_item)
+        if active_item:
+            self.active_item['Remaining'] = self.item_dict["Count per Unit"] - self.active_item['Uses']  
+
       
-    def activate_new_item(self, unit='N/A'):
-        return super().activate_new_item(self.count_per_item)
-    
-    def use_item(self, count_used):
+    def activate_item(self):
+        super().activate_item()
         
-        tot_copy = int(self.active_item[1][0])
-        count_copy = int(self.active_item[1][1])
-        new_active_count = int(count_copy - count_used)
-        self.active_item[1] = (tot_copy, new_active_count)
-
-        if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
-            c_d_use_copy = int(self.active_item[(len(self.active_item)-1)][1])
-            c_d_use_copy += int(count_used)
-            self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
-        else:
-            self.active_item.append((c_d_formatted, count_used))
-
-        if int(new_active_count) <= 0:
+    def use_item(self):
+        super().use_item()
+        
+        if int(self.active_item['Uses']) >= int(self.item_dict['Count per Unit']):
             self.conclude_item()
-        
-        
-            
-            
-        
-        
+
+
 
 class Measure(Item):
     def __init__(self, name, col, subcat, item_dict, active_item, stock, item_history, measure_per_item, measure_unit, use_style):
-        super().__init__(name, col, subcat, item_dict, active_item, stock, item_history)
+        super().__init__(name, col, subcat)
+        self.stock = stock
+        self.item_dict = item_dict
+        self.active_item = active_item
+        self.item_history = item_history
+        
         self.measure_per_item = measure_per_item
         self.measure_unit = measure_unit
         self.use_style = use_style
@@ -157,65 +150,33 @@ class Measure(Item):
         self.item_dict["Measure Unit"] = measure_unit
         self.item_dict["Use Style"] = use_style
 
-        if self.active_item:
-            if self.item_dict['Use Style'] == 'Average': 
-                self.active_item[1] = (self.measure_per_item, 0)
-            elif self.item_dict['Use Style'] == 'Percentage': 
-                self.active_item[1] == (self.measure_per_item, self.measure_per_item)
+        if self.active_item and self.item_dict['Use Style'] == 'Percentage': 
+            self.active_item['Percentage remaining'] = float(input('Enter estimated percentage remaining: '))
     
-    def activate_new_item(self, unit='N/A'):
-        super().activate_new_item(self.measure_per_item)
-        if self.item_dict['Use Style'] == 'Average':
-            self.active_item[1] = (self.measure_per_item, 0)
-            
-    
-
-    def use_item(self, count_used):
-        tot_copy = int(self.active_item[1][0])
-        count_copy = int(self.active_item[1][1])
-        
-        if self.item_dict['Use Style'] == 'Average': 
-            new_active_count = int(count_copy + count_used)
-            self.active_item[1] = (tot_copy, new_active_count)
-
-            if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
-                c_d_use_copy = int(self.active_item[(len(self.active_item)-1)][1])
-                c_d_use_copy += int(count_used)
-                self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
-            else:
-                self.active_item.append((c_d_formatted, count_used))
+    def activate_item(self):
+        super().activate_item()
+        if self.item_dict['Use Style'] == 'Percentage':
+            self.active_item['Percentage remaining'] = 100.0
 
 
+    def use_item(self):
+        if self.item_dict['Use Style'] == 'Percentage':
+            if not self.active_item:
+                self.activate_item()
+            perc_uses = float(input('Enter estimated percentage used: '))
+            self.active_item['Percentage remaining'] = self.active_item['Percentage remaining'] - perc_uses
+      
+            current_date_uses = int(self.active_item["Use Log"].get(c_d_formatted, 0))
+            self.active_item['Use Log'][f'{c_d_formatted}'] = current_date_uses + int(perc_uses)  
 
-        elif self.item_dict['Use Style'] == 'Percentage':
-            perc_used = (float(count_used / 100)) * float(tot_copy)
-            new_active_count = int(count_copy) + perc_used 
-            self.active_item[1] = (tot_copy, new_active_count)
-            
-
-            if self.active_item[(len(self.active_item)-1)][0] == c_d_formatted:
-                c_d_use_copy = float(self.active_item[(len(self.active_item)-1)][1])
-                c_d_use_copy += perc_used
-                self.active_item[(len(self.active_item)-1)] = (c_d_formatted, c_d_use_copy)
-            else:
-                self.active_item.append((c_d_formatted, count_used))
-            
-            if tot_copy <= new_active_count:
+            if self.active_item['Percentage remaining'] <= 0.0:
+                del self.active_item['Percentage remaining']
                 self.conclude_item()
-            
-
-            
-'''
-    def manage_measure(self, count_used=0, amount_used=0):
-        
-        self.active_item[2] + count_used
-        
-        self.active_item[1] - amount_used
-'''
-        
-        
+        else:
+            super().use_item()
 
 
+    
 
 
 
@@ -230,55 +191,55 @@ class Collection:
     def view_collection(self):
         clear_console()
         print(f"======== {self.name} ========")
-        
-        if not self.items:
-            print("(empty!)")
-            time.sleep(1.5)
-            clear_console()
 
         for item in self.items:
+            if not self.items:
+                print('[Collection is empty!]')
+                continue
+
             print(f"[{self.items.index(item)+1}] {item.name} ({item.subcat}) | ({item.stock} in stock)")
             if item.active_item:
-                base_active = f'   -> Active item | Start date: {item.active_item[0][0]}' 
+                base_active = f'   -> Active item | Start date: {item.active_item['Start Date']} ' 
+                
+                
                 if item.item_dict["Measure Type"] == 'Count (per item)':
-                    base_active = base_active + f' [{int(item.active_item[1][1])}/{item.active_item[1][0]} remaining]'
+                    base_active = base_active + f' [{item.item_dict['Count per Unit'] - item.active_item['Uses']}/{item.item_dict['Count per Unit']} remaining]'
 
                 
                 elif item.item_dict["Measure Type"] == 'Weight (per item)':
                     if item.item_dict['Use Style'] == 'Percentage':
-                        base_active = base_active + f' [{(float(item.active_item[1][0]))-(float(item.active_item[1][1]))}% remaining]'
+                        base_active = base_active + f' [{item.active_item['Percentage remaining']}% remaining]'
                     elif item.item_dict['Use Style'] == 'Average':
-                        base_active = base_active + f' [{item.active_item[1][1]} uses in current period]'
-
+                        base_active = base_active + f' [{item.active_item['Uses']} uses in current period]'
+                else:
+                    base_active = base_active + f'[{item.active_item['Uses']} in current period]'
                 print(base_active+'\n')
 
         self.menu_actions()
 
-        
-    def menu_actions(self): 
-        print("======== Actions ========\n[1]Add item\n[2]Edit/Remove item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[8]View item history\n[0]Exit\n") 
+    def menu_actions(self):
+        print("======== Actions ========\n[1]Add item\n[2]Edit item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[8]View item history\n[9]Delete item\n[G]Add item group\n[return]Exit\n") 
+
+              
         menu_action = input("Enter choice: ")
-        
+
         if menu_action == "1":
             name = input("Item name: ")
             subcat = input("Item subcategory: ")
             self.items.append(Item(name, self.name, subcat))
-            self.view_collection()
+            
         
         elif menu_action == '2':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].view_item_traits()
-            self.view_collection()
+            
 
         elif menu_action == "3":
             new_name = input("Enter new collection name: ")
             self.name = new_name
-            self.view_collection()
-
-
+            
         elif menu_action == '4':
             select_item = input('Enter item number: ')
-            
             selected_item = self.items[int(select_item)-1]
             
             print(f'Selected: {selected_item.name}')
@@ -303,41 +264,57 @@ class Collection:
                 new_measure_item = Measure(selected_item.name, selected_item.col, selected_item.subcat, selected_item.item_dict, selected_item.active_item, selected_item.stock, selected_item.item_history, measure_per_item, measure_unit, use_style)
                 self.items.pop(int(select_item)-1)
                 self.items.append(new_measure_item)
-
-
-            self.view_collection()
+                
 
         elif menu_action == '5':
             select_item = input('Enter item number: ')
-            self.items[int(select_item)-1].activate_new_item()
-            self.view_collection()
+            self.items[int(select_item)-1].activate_item()
+            
         
         elif menu_action == '6':
             select_item = input('Enter item number: ')
+            self.items[int(select_item)-1].use_item()
             
-            use_amount = input('Enter amount used: ')
-            self.items[int(select_item)-1].use_item(int(use_amount))
-            self.view_collection()
 
         elif menu_action == '7':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].update_stock()
-            self.view_collection()
+            
         
         elif menu_action == '8':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].view_history()
             exit_check = input('Press any key to exit')
-            self.view_collection()
-                        
-        elif menu_action == "0":
-            clear_console()
-
-
-
-
-
             
+
+        elif menu_action == '9':
+            select_item = input('Enter item number: ')
+            self.items.pop(int(select_item)-1)
+
+        elif menu_action == 'g':
+            from main import groups
+
+            group_name = input('Enter group name: ')
+            group_items = input('Select items for group, separated with [,]')
+            group = [] + groups.get(group_name, [])
+            for item_number in group_items.split(','):
+                self.items[int(item_number)-1].add_item_group(group_name)
+                group.append(self.items[int(item_number)-1].name)
+            
+
+            groups[group_name] = group
+
+
+                        
+        elif menu_action == "":
+            clear_console()
+            return
+        
+        
+        clear_console()
+        self.view_collection()
+
+        
 #========Memos
 
 #Need to see how to check if col is memo, so it can be printed separately 
@@ -382,7 +359,7 @@ class Memos:
             return
 
 
-#todo - finish this + main interactions
+
 
 class Memo(Item):
     def __init__(self, name, subcat):
@@ -448,4 +425,3 @@ def create_collection(collections):
     else:
         collections.append(new_collection)
         clear_console()
-    

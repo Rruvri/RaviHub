@@ -1,23 +1,22 @@
 #Imports + sys commands
 
-
+import os
 import sys
 import time
 import pickle
 
-from classes import *
+from oldobjects import *
 from tracking import c_d_formatted
-from sysfunc import *
 
+def clear_console():
+    os.system('clear')
 
 # Set-Up
     
 collections = []
 memos = Memos()
-groups = {}
 
-
-with open('collection_save.pkl', 'rb') as f:
+with open('C:\Users\ravin\OneDrive\Desktop\collection_save (1).pkl', 'rb') as f:
     
     collections_load = pickle.load(f)
     
@@ -25,29 +24,39 @@ with open('collection_save.pkl', 'rb') as f:
     memos = collections_load[1]
 
 
+            
+            
+def tester():
+    for c in collections:
+        for item in c.items:
+            if item.active_item:
+                print(item.name, item.active_item)
+            #if item.item_history:
+             #   print(item.item_history)
 
+
+   
+            
+
+
+
+clear_console()
 
 
 #TO-DO: Add fn for objects (toggle) that will display 'need to buy' in reminders when empty (i.e. bread, eggs, milk)
-clear_console()
+
 def main():
     while True:
-        
-        if len(sys.argv) > 1 and sys.argv[1] == 'dev':
-            tester(collections, groups)
-            print('\n')
+        tester()
         print(c_d_formatted)
         print("======= RaviHub =======\n->Reminders:")
         memos.view_collection()
         print("\n->Open Collections:")
         for col in collections:
             print(f"{col.name}: {[item.name for item in col.items]}")
-            
         print("=======================\n")
         
-
-
-
+        
 #Main Menu + Options
 
         menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[6]View/Edit memos\n[0]Save and exit\n\nEnter choice: ")
@@ -81,7 +90,6 @@ def main():
                 del collections[int(delete_choice) -1]
             elif confirm.lower() == 'n':
                 break
-            clear_console()
         
         elif menu_choice == '5':
             clear_console()
@@ -93,7 +101,6 @@ def main():
             
         elif menu_choice == '0':
             clear_console()
-            
             with open('collection_save.pkl', 'wb') as f:
                 pickle.dump([collections, memos], f)
             print("Saved! Now exiting...")
@@ -102,6 +109,13 @@ def main():
 
             
          
+            
+
+         
+
+        
+
+    
 
 main()
 
