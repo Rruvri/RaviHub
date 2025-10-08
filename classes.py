@@ -54,7 +54,7 @@ class Item:
     
     def update_stock(self):
             print(f'In stock (excluding current active item): {self.stock}')
-            self.stock = input('Enter new stock number: ')
+            self.stock = int(input('Enter new stock number: '))
 
     def activate_item(self):
         if self.active_item:
@@ -65,6 +65,8 @@ class Item:
                              'Uses': 0,
                                'End Date': None,
                                  'Use Log': {}}
+        if int(self.stock) > 0:
+            self.stock -= 1
         
 
     def conclude_item(self):
@@ -82,10 +84,14 @@ class Item:
         if self.stock > 0:
             self.stock -= 1
 
-    def use_item(self):
+    def use_item(self, ext_uses=False):
         if not self.active_item:
             self.activate_item()
-        uses = input('Enter amount used: ')
+        if ext_uses:
+            uses = int(ext_uses)
+        else:
+            uses = input('Enter amount used: ')
+        
             
         use_copy = self.active_item['Uses']
         use_copy += int(uses)
@@ -94,14 +100,15 @@ class Item:
         
         current_date_uses = int(self.active_item["Use Log"].get(c_d_formatted, 0))
         self.active_item['Use Log'][f'{c_d_formatted}'] = current_date_uses + int(uses)
-                
+        
+
     def view_history(self):
         for hist_log in self.item_history:
             print(f'{hist_log}\n')
 
-    def add_item_group(self, group):
-        self.item_dict['Groups'] = group
-    
+    def add_item_group(self, group_info):
+        self.item_dict['Groups'].append(group_info)
+
 
 
 
@@ -126,7 +133,7 @@ class Count(Item):
     def activate_item(self):
         super().activate_item()
         
-    def use_item(self):
+    def use_item(self, ext_uses=False):
         super().use_item()
         
         if int(self.active_item['Uses']) >= int(self.item_dict['Count per Unit']):
@@ -159,11 +166,16 @@ class Measure(Item):
             self.active_item['Percentage remaining'] = 100.0
 
 
-    def use_item(self):
+    def use_item(self, ext_uses=False):
         if self.item_dict['Use Style'] == 'Percentage':
             if not self.active_item:
                 self.activate_item()
-            perc_uses = float(input('Enter estimated percentage used: '))
+            
+            if ext_uses:
+                perc_uses = int(ext_uses)
+            else:
+                perc_uses = float(input('Enter estimated percentage used: '))
+            
             self.active_item['Percentage remaining'] = self.active_item['Percentage remaining'] - perc_uses
       
             current_date_uses = int(self.active_item["Use Log"].get(c_d_formatted, 0))
@@ -217,8 +229,15 @@ class Collection:
 
         self.menu_actions()
 
+    def use_group(self, group_name):
+        for item in self.items:
+            for tuple in item.item_dict["Groups"]:
+                if tuple[0].lower() == group_name.lower():
+                    item.use_item(int(tuple[1])) 
+
+
     def menu_actions(self):
-        print("======== Actions ========\n[1]Add item\n[2]Edit item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[8]View item history\n[9]Delete item\n[G]Add item group\n[return]Exit\n") 
+        print("======== Actions ========\n[1]Add item\n[2]Edit item\n[3]Rename collection\n[4]Upgrade item\n[5]Activate item\n[6]Use item\n[7]Update item stock\n[8]View active item log\n[9]Delete item\n[H]View item usage history\n[G]Add item group\n[return]Exit\n") 
 
               
         menu_action = input("Enter choice: ")
@@ -254,7 +273,7 @@ class Collection:
 
 
             elif item_measure_parameters == 'm'.lower():
-                measure_unit = input('Enter the metric used to measure the item in its shorthand form (i.e. [g] for grams)')
+                measure_unit = input('Enter the metric used to measure the item in its shorthand form (i.e. [g] for grams)   NOTE! - for items like a single onion, enter unit " whole" for now: ')
                 measure_per_item = input('Enter the numeric measurement of the item (i.e. [1]kg bag of lentils)')
                 use_style_check = input('Will the item be tracked on a [a]verage count method (i.e. recording number of cigarettes), or rough [p]ercentage tracker (i.e. using 50 percent of a bag of lentils)?')
                 if use_style_check == 'a':
@@ -269,6 +288,7 @@ class Collection:
         elif menu_action == '5':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].activate_item()
+            self.items.append(self.items.pop(int(select_item)-1))
             
         
         elif menu_action == '6':
@@ -280,8 +300,17 @@ class Collection:
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].update_stock()
             
-        
         elif menu_action == '8':
+            select_item = input('Enter item number: ')
+            selected = self.items[int(select_item)-1]
+            if not selected.active_item:
+                print('No current active item!')
+            else:
+                for k, v in selected.active_item.items():
+                    print(f'{k}: {v}')
+            exit = input('[return] to exit')
+
+        elif menu_action == 'h':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].view_history()
             exit_check = input('Press any key to exit')
@@ -298,10 +327,9 @@ class Collection:
             group_items = input('Select items for group, separated with [,]')
             group = [] + groups.get(group_name, [])
             for item_number in group_items.split(','):
-                self.items[int(item_number)-1].add_item_group(group_name)
+                gr_use_amount = input(f'For {self.items[int(item_number)-1].name}, enter use amount for group usage: ')
+                self.items[int(item_number)-1].add_item_group((group_name, gr_use_amount))
                 group.append(self.items[int(item_number)-1].name)
-            
-
             groups[group_name] = group
 
 
@@ -345,16 +373,16 @@ class Memos:
             else:
                 print(f'{base_memo}\n')
         
-        menu_choice = input('=======================\nActions:\n[1]Delete a memo\n[0]Return\nEnter choice: ')
+        menu_choice = input('=======================\nActions:\n[1]Delete a memo\n[return]Exit\nEnter choice: ')
         if menu_choice == '1':
-             del_choice = input('Enter memo no. to delete (or 0 to exit): ')
+             del_choice = input('Enter memo no. to delete (or [return] to exit): ')
              if del_choice == '0':
                  self.full_view()
              del self.items[int(del_choice)-1]
              clear_console()
              self.full_view()
         
-        elif menu_choice == '0':
+        elif menu_choice == '':
             clear_console()
             return
 

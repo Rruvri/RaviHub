@@ -23,6 +23,7 @@ with open('collection_save.pkl', 'rb') as f:
     
     collections = collections_load[0]
     memos = collections_load[1]
+    groups = collections_load[2]
 
 
 
@@ -91,11 +92,12 @@ def main():
             clear_console()
             memos.full_view()
             
+            
         elif menu_choice == '0':
             clear_console()
             
             with open('collection_save.pkl', 'wb') as f:
-                pickle.dump([collections, memos], f)
+                pickle.dump([collections, memos, groups], f)
             print("Saved! Now exiting...")
             time.sleep(1)
             sys.exit()
