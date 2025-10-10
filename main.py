@@ -26,6 +26,15 @@ with open('collection_save.pkl', 'rb') as f:
     groups = collections_load[2]
 
 
+def use_group(group_name):
+        for c in collections:
+            for item in c.items:
+                for tuple in item.item_dict["Groups"]:
+                    if tuple[0].lower() == group_name.lower():
+                        ext_uses=int(tuple[1])
+                        item.use_item(ext_uses) 
+
+
 
 
 
@@ -51,7 +60,7 @@ def main():
 
 #Main Menu + Options
 
-        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[6]View/Edit memos\n[0]Save and exit\n\nEnter choice: ")
+        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[6]View/Edit memos\n[7]Use grouped items\n[0]Save and exit\n\nEnter choice: ")
         
         if menu_choice == "1":
             clear_console()
@@ -91,6 +100,23 @@ def main():
         elif menu_choice == '6':
             clear_console()
             memos.full_view()
+        
+        elif menu_choice == '7':
+            clear_console()
+            index_num = 1
+            for key, value in groups.items():
+                print(f'[{index_num}] {key}: {value}')
+                index_num +=1
+            group_choice = input('Enter entry number to edit, [return] to exit: ')
+            if group_choice == '':
+                clear_console()
+                main()
+            
+            
+            key_list = list(groups)
+            selected_key = key_list[int(group_choice)-1]
+            use_group(selected_key)
+
             
             
         elif menu_choice == '0':

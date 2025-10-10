@@ -35,22 +35,43 @@ class Item:
         self.item_history = []
 
         self.active_item = {}
+
+    def view_dict(self, dictionary):
+        clear_console()
+        index_num = 1
+
+        for key, value in dictionary.items():
+            print(f'[{index_num}] {key}: {value}')
+            index_num +=1
+        edit_choice = input('Enter entry number to edit, [return] to exit: ')
+        if edit_choice == '':
+            clear_console()
+            return
+        key_list = list(dictionary)
+        selected_key = dictionary[key_list[int(edit_choice)-1]]
+        
+        
+        if isinstance(selected_key, dict):
+            return self.view_dict(selected_key)
+        
+        #could use a lambda here
+        new_value = input('Enter new value: ')
+        if isinstance(selected_key, int):
+            new_value = int(new_value)
+        elif isinstance(selected_key, float):
+            new_value = float(new_value)
+        elif isinstance(selected_key, tuple):
+            new_value = tuple(new_value)
+        
+        
+        dictionary[key_list[int(edit_choice)-1]] = new_value
+        
+        
     
     def view_item_traits(self):
         clear_console()
         print(f"======== {self.name} ========")
-        index_num = 1
-        for key, value in self.item_dict.items():
-            print(f'[{index_num}] {key}: {value}')
-            index_num +=1
-        exit = input('[return] to exit')
-        #then would need the variant stuff below, do this later
-    
-    def edit_item(self):
-        choice = input('...[enter] to go back')
-        if choice == '':
-            return
-        #doing full edit later
+        self.view_dict(self.item_dict)
     
     def update_stock(self):
             print(f'In stock (excluding current active item): {self.stock}')
@@ -90,10 +111,10 @@ class Item:
         if ext_uses:
             uses = int(ext_uses)
         else:
-            uses = input('Enter amount used: ')
+            uses = int(input('Enter amount used: '))
         
             
-        use_copy = self.active_item['Uses']
+        use_copy = int(self.active_item['Uses'])
         use_copy += int(uses)
         self.active_item['Uses'] = int(use_copy) #might need to check these for int(/ str clash 
 
@@ -229,11 +250,7 @@ class Collection:
 
         self.menu_actions()
 
-    def use_group(self, group_name):
-        for item in self.items:
-            for tuple in item.item_dict["Groups"]:
-                if tuple[0].lower() == group_name.lower():
-                    item.use_item(int(tuple[1])) 
+    
 
 
     def menu_actions(self):
@@ -306,10 +323,8 @@ class Collection:
             if not selected.active_item:
                 print('No current active item!')
             else:
-                for k, v in selected.active_item.items():
-                    print(f'{k}: {v}')
-            exit = input('[return] to exit')
-
+                selected.view_dict(selected.active_item)
+                               
         elif menu_action == 'h':
             select_item = input('Enter item number: ')
             self.items[int(select_item)-1].view_history()
