@@ -6,130 +6,149 @@ import time
 import pickle
 
 from classes import *
+from memos import *
+from items import *
 from tracking import c_d_formatted
+from tracking import time_output
+from tracking import weekday
+from tracking import current_date
+from tracking import current_time
 from sysfunc import *
 
 
+
 # Set-Up
-    
+
 collections = []
 memos = Memos()
 groups = {}
+prev_dt = None
 
 
 with open('collection_save.pkl', 'rb') as f:
-    
-    collections_load = pickle.load(f)
-    
-    collections = collections_load[0]
-    memos = collections_load[1]
-    groups = collections_load[2]
 
+		collections_load = pickle.load(f)
+	
+		collections = collections_load[0]
+		memos = collections_load[1]
+		groups = collections_load[2]
+		prev_dt = collections_load[3][1]
 
+	
+'''
 def use_group(group_name):
-        for c in collections:
-            for item in c.items:
-                for tuple in item.item_dict["Groups"]:
-                    if tuple[0].lower() == group_name.lower():
-                        ext_uses=int(tuple[1])
-                        item.use_item(ext_uses) 
-
-
-
-
-
+	for c in collections:
+		for item in c.items:
+			if group_name in item.item_dict["Groups"].keys():
+				pass #item.use_item(itemgroup_name)
+				'''
+					
+					
+					
+					
+					
 #TO-DO: Add fn for objects (toggle) that will display 'need to buy' in reminders when empty (i.e. bread, eggs, milk)
 clear_console()
 def main():
-    while True:
-        
-        if len(sys.argv) > 1 and sys.argv[1] == 'dev':
-            tester(collections, groups)
-            print('\n')
-        print(c_d_formatted)
-        print("======= RaviHub =======\n->Reminders:")
-        memos.view_collection()
-        print("\n->Open Collections:")
-        for col in collections:
-            print(f"{col.name}: {[item.name for item in col.items]}")
-            
-        print("=======================\n")
-        
-
-
-
+	
+	while True:
+		if len(sys.argv) > 1 and sys.argv[1] == 'dev':
+			tester(collections, groups)
+			print('\n')
+		
+		#testing dt_tracking
+			
+		print(time_output)
+		print(weekday, c_d_formatted)
+		print("======= RaviHub =======\n->Reminders:")
+		memos.view_collection()
+		print("\n->Open Collections:")
+		for col in collections:
+			print(f"{col.name}: {[item.name for item in col.items]}")
+			
+		print("=======================\n")
+		
+		
+		
+		
 #Main Menu + Options
 
-        menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[6]View/Edit memos\n[7]Use grouped items\n[0]Save and exit\n\nEnter choice: ")
-        
-        if menu_choice == "1":
-            clear_console()
-            create_item(collections)
+		menu_choice = input("Actions:\n[1]Create new item\n[2]Create new collection\n[3]View a collection\n[4]Delete a collection\n[5]Add new memo\n[6]View/Edit memos\n[7]Use grouped items\n[T]Show tests\n[0]Save and exit\n\nEnter choice: ")
+		
+		if menu_choice == "1":
+			clear_console()
+			create_item(collections)
+			
+		elif menu_choice == "2":
+			clear_console()
+			create_collection(collections)
+			
+		elif menu_choice == "3":
+			clear_console()
+			if not collections:
+				print("No collections yet, returning to main menu...")
+				time.sleep(2)
+				clear_console()
+			for col in collections:
+				print(f"[{collections.index(col) + 1}] {col.name}\n")
+			view_choice = input("Enter collection [number]: ")
+			clear_console()
+			collections[int(view_choice) -1].view_collection()
+			
+		elif menu_choice == '4':
+			for col in collections:
+				print(f"[{collections.index(col) + 1}] {col.name}\n")
+			delete_choice = input("Enter collection [number]: ")
+			confirm = input("Are you SURE you want to delete?[Y/N]: ")
+			if confirm.lower() == 'y':
+				del collections[int(delete_choice) -1]
+			elif confirm.lower() == 'n':
+				break
+			clear_console()
+			
+		elif menu_choice == '5':
+			clear_console()
+			create_memo(memos)
+			
+		elif menu_choice == '6':
+			clear_console()
+			memos.full_view()
+			
+		elif menu_choice == '7':
+			clear_console()
+			index_num = 1
+			for key, value in groups.items():
+				print(f'[{index_num}] {key}: {value}')
+				index_num +=1
+			group_choice = input('Enter entry number to edit, [return] to exit: ')
+			if group_choice == '':
+				clear_console()
+				main()
+				
+				
+			key_list = list(groups)
+			selected_key = key_list[int(group_choice)-1]
+			use_group(selected_key)
 
-        elif menu_choice == "2":
-            clear_console()
-            create_collection(collections)
+		elif menu_choice == 't'.lower():
+			clear_console()
+			tester(collections, groups, prev_dt)
+			returncheck = input('[return] to go back')
+			clear_console()
 
-        elif menu_choice == "3":
-            clear_console()
-            if not collections:
-                    print("No collections yet, returning to main menu...")
-                    time.sleep(2)
-                    clear_console()   
-            for col in collections:
-                print(f"[{collections.index(col) + 1}] {col.name}\n") 
-            view_choice = input("Enter collection [number]: ")
-            clear_console()
-            collections[int(view_choice) -1].view_collection()
-
-        elif menu_choice == '4':
-            for col in collections:
-                print(f"[{collections.index(col) + 1}] {col.name}\n") 
-            delete_choice = input("Enter collection [number]: ")
-            confirm = input("Are you SURE you want to delete?[Y/N]: ")
-            if confirm.lower() == 'y':
-                del collections[int(delete_choice) -1]
-            elif confirm.lower() == 'n':
-                break
-            clear_console()
-        
-        elif menu_choice == '5':
-            clear_console()
-            create_memo(memos)
-        
-        elif menu_choice == '6':
-            clear_console()
-            memos.full_view()
-        
-        elif menu_choice == '7':
-            clear_console()
-            index_num = 1
-            for key, value in groups.items():
-                print(f'[{index_num}] {key}: {value}')
-                index_num +=1
-            group_choice = input('Enter entry number to edit, [return] to exit: ')
-            if group_choice == '':
-                clear_console()
-                main()
-            
-            
-            key_list = list(groups)
-            selected_key = key_list[int(group_choice)-1]
-            use_group(selected_key)
-
-            
-            
-        elif menu_choice == '0':
-            clear_console()
-            
-            with open('collection_save.pkl', 'wb') as f:
-                pickle.dump([collections, memos, groups], f)
-            print("Saved! Now exiting...")
-            time.sleep(1)
-            sys.exit()
-
-            
-         
-
+		
+		
+		elif menu_choice == '0':
+			clear_console()
+			dt_save = [current_date, current_time]
+			with open('collection_save.pkl', 'wb') as f:
+				pickle.dump([collections, memos, groups, dt_save], f)
+			print("Saved! Now exiting...")
+			time.sleep(1)
+			sys.exit()
+			
+			
+			
+			
 main()
 
