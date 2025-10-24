@@ -60,8 +60,10 @@ def main():
 			
 		print(time_output)
 		print(weekday, c_d_formatted)
+		
 		print("======= RaviHub =======\n->Reminders:")
 		memos.view_collection()
+		
 		print("\n->Open Collections:")
 		for col in collections:
 			print(f"{col.name}: {[item.name for item in col.items]}")
